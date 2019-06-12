@@ -429,20 +429,101 @@ different benchmarks.
 
 \subsection{Experiment Result}
 
-The Experiment result of CSM, USM and random algorithm are shown below.
+The Experiment result of CSM, USM and random algorithm are shown in Figure 4 to 9.
 
 	\begin{figure}[h]
 	  \centering
 	  \subfigure{
-	    \begin{minipage}[t]{0.25\linewidth}
+	    \begin{minipage}[t]{0.7\linewidth}
 	    \centering
 	    \includegraphics[width=2in]{tiger_grid_adr_time.png}
 	    \end{minipage}
 	  }
-	  \caption{Performance of different agent on tiger grid}
+	  \caption{ADR with time in tiger grid}
 	  \label{fig:tiger_grid_adr_time}
 	\end{figure}
 
+	\begin{figure}[h]
+	\centering
+	\subfigure{
+		\begin{minipage}[t]{0.7\linewidth}
+			\centering
+			\includegraphics[width=2in]{tiger_grid_adr_step.png}
+		\end{minipage}
+	}
+	\caption{ADR with time in tiger grid}
+	\label{fig:tiger_grid_adr_step}
+	\end{figure}
+
+
+	\begin{figure}[h]
+		\centering
+		\subfigure{
+			\begin{minipage}[t]{0.7\linewidth}
+				\centering
+				\includegraphics[width=2in]{hallway_adr_time.png}
+			\end{minipage}
+		}
+		\caption{ADR with time in hallway}
+		\label{fig:hallway_adr_time}
+	\end{figure}
+	
+	\begin{figure}[h]
+		\centering
+		\subfigure{
+			\begin{minipage}[t]{0.7\linewidth}
+				\centering
+				\includegraphics[width=2in]{hallway_adr_step.png}
+			\end{minipage}
+		}
+		\caption{ADR with steps in hallway}
+		\label{fig:hallway_adr_step}
+	\end{figure}
+
+
+	\begin{figure}[h]
+	\centering
+	\subfigure{
+		\begin{minipage}[t]{0.7\linewidth}
+			\centering
+			\includegraphics[width=2in]{mccallum_adr_time.png}
+		\end{minipage}
+	}
+	\caption{ADR with time in McCallum}
+	\label{fig:mccallum_adr_time}
+	\end{figure}
+	
+	\begin{figure}[h]
+		\centering
+		\subfigure{
+			\begin{minipage}[t]{0.7\linewidth}
+				\centering
+				\includegraphics[width=2in]{mccallum_adr_step.png}
+			\end{minipage}
+		}
+		\caption{ADR with steps in McCallum}
+		\label{fig:hallway_adr_step}
+	\end{figure}
+
+
+
+\subsection{Experiment Result Analysis}
+
+In the Tiger Grid problem, the CSM algorithm quickly reached a very high ADR in a short time after the start of the experiment, and as the experiment progressed, the ADR of the CSM was basically stable at around 8. In contrast, the experimental results of the USM algorithm have large fluctuations in the early stage of the experiment, and the experimental results in the latter part of the experiment are basically stable at 3.5, which is much lower than the CSM.
+
+
+In the Hallway problem, the experimental results of the two algorithms show large fluctuations, which is related to the existence of more hidden states in the Hallway problem. Despite this, CSM's ADR is twice as large as USM.
+
+In the McCallum Maze problem, similar to the performance in the Tiger Grid problem, the CSM algorithm quickly reached a very high ADR in the short time after the start of the experiment, and as the experiment progressed, the ADR of the CSM was basically stable at 6. In contrast, the experimental results of the USM algorithm did not increase significantly in the early stage of the experiment, and only showed a growth trend in the later stage of the experiment. Despite this, USM's final ADR is only about 2, far less than CSM. This shows that in the case of a large problem set, CSM can explore the whole problem more quickly and better than USM, and find the optimal strategy.
+
+Overall, It can be seen that the CSM algorithm is superior to the USM algorithm.
+
+
+
+
+\section{Conclusion}
+
+In this paper, the USM algorithm is described in detail, and the defects of USM algorithm are proposed. Based on the original algorithm, some suggestions for improvement are proposed. Then the CSM (Compressed Suffix Memory) algorithm is proposed. At the end of this paper, the content of the maze experiment is introduced to test the CSM algorithm, and compared with the results of the USM algorithm, it shows that the CSM algorithm does have some improvement effects.
 
 
 
