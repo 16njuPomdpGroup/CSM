@@ -1,0 +1,562 @@
+\documentclass{article}
+
+% optional packages
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{algorithm, algorithmic}
+
+% pass options to natbib (if needed) before loading dai_2019
+% \PassOptionsToPackage{authoryear,sort&compress}{natbib}
+
+% for camera-ready version:
+\usepackage[final]{dai_2019} 
+% for submission:
+% \usepackage{dai_2019}
+
+% your custom packages, macros, etc.
+
+\title{CSM: An Improved Algorithm for Instance-based Reinforcement Learning%\thanks{Title notes.}
+}
+
+% Please use \And between authors, or use \AND to force line breaking.
+
+\author{%
+  Feng Liu\\ 
+  Nanjing University\\ 
+  Nanjing, China \\
+  \texttt{fengliu@nju.edu.cn} \\
+  % more authors
+  \And
+  Haomin Qiu \\
+  Nanjing University\\ 
+  Nanjing, China \\
+  \texttt{aquafits@outlook.com} \\
+  \And
+  Peng Huang \\
+  Nanjing University\\ 
+  Nanjing, China \\
+  \texttt{paulwongpang@foxmail.com} \\
+  \And
+  Chongjun Wang \\
+  Nanjing University\\ 
+  Nanjing, China \\
+  \texttt{chjwang@nju.edu.cn} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+}
+
+\begin{document}
+
+\maketitle 
+
+\begin{abstract}
+  Instance-based approaches are effective ways for solving reinforcement
+  learning problems. Utile Suffix Memory (USM) algorithm has shown decent results for
+  distinguishing different states from instance chains and generating Q-value 
+  of actions of each state, but involving exponentially expanded state space and
+  a number of redundant states. In this paper we propose a new state space compressed
+  algorithm, called Compressed Suffix Memory (CSM) algorithm. CSM algorithm obtains
+  heuristic information of environments by blind exploration, e.g. the path length
+  of most solutions and goal frequencies, to improve efficiency and resist overfitting.
+  We use Boltzmann sampling to balance between exploration and exploitation. Our experiments
+  show that both the efficiency and the effect have been improved a lot by CSM algorithm
+  compared with USM algorithm.
+\end{abstract}
+
+\section{Introduction}
+
+Reinforcement learning is learning what to do—how to map situations to actions—so
+as to maximize a numerical reward signal in a provided environment
+\cite{sutton2018reinforcement}. In many reinforcement learning scenarios such as
+robotic exploration \cite{smith2007probabilistic} and autonomous driving
+\cite{bai2015intention}, the agent is only able to gain partial and noisy
+observations form environment, so POMDP (partially observable Markov decision
+process) model is wildly adopted. According to the observations, reward and the
+historical information, POMDPs provide a rich mathematical approach to solving
+sequential problems by calculating the Q-value of actions.
+
+As the agent does not directly observe the underlying state, the generation of
+the state space is the key to POMDP-based reinforcement learning algorithms.
+Many instance based methods have been put forward, including Nearest Sequence
+Memory (NSM) algorithm \cite{mccallum1997reinforcement} and Utile Suffix Memory
+(USM) algorithms \cite{mccallum1995instance}. USM algorithm presents the state space by
+tree-nodes in a suffix tree building from the instance chains, and is proved
+effective maximizing the Q-value of actions. However, the state space of USM
+algorithm exponentially expands during iteration and comprises many redundant
+states, which reduces the efficiency. Furthermore, because the $\epsilon$-greedy
+policy of USM treats the second best and the worst the same, it may lead to
+overfitting.
+
+In this paper, we propose a new algorithm, called Compressed Suffix Memory (CSM)
+algorithm, which optimizes the generation of a utile tree and decision process.
+First, the heuristic information is obtained by the agent during a blind exploration
+of the environment, e.g., $l$ as the length of the longest non-repetitive observation
+sequence and $p$ the probability of goal during this exploration. Second, the maximum
+depth of the suffix tree is limited to doubled $l$ and the minimum instances required
+to trigger state splitting is deduced from $p$. Finally, after initializing the agent
+with a random policy, boltzmann sampling approach will be applied. Experiment has shown
+that both the efficiency and the effect have been greatly improved by CSM compared
+with USM.
+
+The paper outline follows. We will briefly review the basics of reinforcement
+learning, POMDP problems and Utile Suffix Memory (USM) algorithm, in Section 2.
+Next we propose Compressed Suffix Memory (CSM) algorithm, which solves the weaknesses
+of USM by new means of utile tree generation, new exploration method and self correction
+mechanism, in Section 3. We measure the performance of CSM and see improvements comparing
+with USM, in Section 4. We close in Section 5, with a brief summary and possible means of
+improvement of CSM.
+
+\section{Background}
+
+\subsection{Reinforcement Learning in Partially Observable Environment}
+
+Reinforcement learning is about how an agent learning to map states to actions
+and produce a maximized reward in a provided environment. In general, a
+reinforcement learning agent interacts with the environment over time.
+At each time step $t$, it determines its state $s_t$ from a state space $S$,
+and chooses a best action $a_t$ from an action space $A$ according to the policy
+$\pi$. The agent gets a instant reward $r_t$ according to the reward function
+$R(s_t, a_t)$ and transfer to the next state $s_{t+1}$ according to the transition
+probability $T(s_{t+1}|s_t, a_t)$. The reward is normally discounted with factor
+$\gamma\in(0,1]$, and the   accumulated reward at $t_n$ is defined as
+$R_{t_n}=\sum_{t=0}^{t_n} \gamma^t r_t$. When a problem satisfies the Markov
+property, the problem can be formulated as a Markov decision process (MDP), which
+is defined by the 5-tuple ($S, A, T, R, \gamma$).
+
+However, in most cases, an agent cannot directly observe the states of the MDP
+model underlying the provided environment, but can only deduce a state by an
+observation. It is necessary to bring in partially observable Markov decision
+process (POMDP). It defines $\Omega$ as a set of observations and $O$ as a set of
+conditional observation probabilities-mapping current state $s_t$ and
+previous action $a_{t-1}$ to the probability of current observation $o_t$. 
+In that way, a POMDP can be defined by the 7-tuple ($S, A, T, R, \Omega, O, \gamma$).
+
+When the model is given, i.e., all elements of the 7-tuple are known, there are
+plenty of algorithms to calculate a best policy \cite{shani2013survey}. However,
+in model-free methods, an agent can learn with trail-and-error from experience
+directly and a policy can generated before grasping all information of a model
+\cite{li2017deep}. An important way to implement model-free methods is to make
+an agent comprise some sort of internal memory \cite{aberdeen2003policy,
+meuleau1999learning,mccallum1995instance} (see Figure~\ref{fig:agent memory}).
+For example, the states of a model can be expressed by some nearest observations
+and internal states of an agent. After learning the state space, the agent can solve it by 
+model-free methods, such as HQ-learning \cite{wiering1997hq}.
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.45\textwidth]{1.png}
+  \caption{The agent model that has internal memory}
+  \label{fig:agent memory}
+\end{figure}
+
+The internal memory of an agent can comprise instances that record what it has
+encountered at each time step. Nearest Sequence Memory (NSM) and Utile
+Suffix Memory (USM) algorithms are based on the instances.
+
+
+\subsection{Utile Suffix Memory Algorithm}
+
+The interaction between the agent implementing USM and the environment is described by
+$A, O, R$, which are finite set of actions, finite set of observations and a reward function.
+Like other instance based algorithms, USM records each of its raw instances
+\cite{mccallum1995instance}. At each time step $t$, the agent executes action
+$a_t \in A$ to get a new instance, gets observation $o_{t+1} \in O$, and get a
+instant reward $r_{t+1}$ according to $R$, which is determined by the environment.
+That new instance is formulated as
+\begin{equation}
+  T_{t+1}= (T_t, a_t, o_{t+1}, r_{t+1}). \label{equ:instance}
+\end{equation}
+$T_{t+1}$ is $T_t$'s successor and, similarly, $T_{t-1}$ is $T_t$'s predecessor.
+Normally, in an environment with goals for agent to reach, chains of instances-from
+initial instance to instance reached goal-are built during the learning phase.
+
+In order to find hidden states from those instances chains, USM creates a suffix tree,
+whose leaves present the state space and store clustered instances. Each node of the tree
+can thus be uniquely identified by the string of labels on the path from node to the root,
+and the string is called the node’s suffix. An instance is always deposited into the
+nodes whose suffix matches its observation and action context, or suffix. That is,
+for an instance $T_i$, if its suffix $[..., o_{t-3}, a_{t-3}, o_{t-2}, a_{t-2}, o_{t-1}, a_{t-1}]$
+matches the suffix of some node, it would be put into that node (see Figure~\ref{fig:suffix tree}).
+The set of instances that a node contains is written as $I(s)$. The suffix tree leaf which
+instance $T$ belongs to is written as $L(T)$. It is inevitable that the action layer and
+the observation layer appears alternately when tree grows (see Figure~\ref{fig:suffix tree}).
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.45\textwidth]{usm_sample.jpg}
+  \caption{The agent navigates itself in a maze (probably not the first time), generates
+  a sequence of instances, and builds a suffix tree. The action layer and
+  the observation layer appears alternately.}
+  \label{fig:suffix tree}
+\end{figure}
+
+Besides the general nodes, there is another type of node called "fringe" node \cite{mccallum1995instance}.
+The fringe nodes are actually the deepest layers of the suffix tree, however, we treated them
+the inner instance buckets of the leaves previously mentioned. Fringe nodes also contain
+instances according to the same suffix criterion used by non-fringe nodes. That is, 
+if the suffix of a leaf is $[a_{t-2}, o_{t-1}, a_{t-1}]$, an 1-layer deeper fringe nodes of it
+will stores the instance that matches suffix $[o_{t-2}, a_{t-2}, o_{t-1}, a_{t-1}]$. The agent decides
+whether it should promote fringe nodes to leaves by Kolmogorov-Smirnov test, which determine the
+instances in the fringes and that of their parent are drawn the same distribution.
+
+The steps of USM is as below:
+
+\begin{enumerate}
+
+  \item The agent begins with a suffix tree that comprises a root node and an layer of
+  observation nodes as leaves, i.e., the agent only acts according to its observation.
+
+  \item The agent makes decision and interacts with the environment at time step $t$.
+  It records its learning history as an instance $T_t$ (see Equation~\ref{equ:instance}).
+  For all $s$, no matter $s$ is leaf or fringe, if the suffix of $s$ matches the suffix of
+  $T_t$. Their instance set are updated as:
+    \begin{equation}
+      I(s) \leftarrow I(s) \cup {T_t}.
+    \end{equation}
+    
+  \item For each instance added, the agent does one Bellman iteration with the leaves of
+  of the states:
+    \begin{equation}
+      Q(s,a) \leftarrow R(s,a)  + \gamma Pr(s'|s,a)U(s').
+    \end{equation}
+  Let $I(s,a)$ be the subset of $I(s)$ that contains all the instances that executed
+  action $a$. $U(s')$ is the utility of the state $s'$, calculated as $U(s) = \max_{a \in A} Q(s,a)$.
+  $R(s,a)$ and $Pr(s'|s,a)$ are the estimated immediate reward and the transition probability,
+  respectively, that drawn from the instance chains:
+
+    \begin{equation}
+      R(s,a) = \frac{\sum_{T_i \in I(s,a)}r_i} {|I(s,a)|}
+    \end{equation}
+
+    \begin{equation}
+      Pr(s'|s,a) = \frac{|\forall{T_i \in I(s,a) \ s.t. \ L(T_{i+1} = s')}|} {|I(s,a)|}
+    \end{equation}
+
+  \item Agent perform Kolmogorov-Smirnov test every $n$ instance additions. The expected
+  discounted reward of instance $T_i$ is written as $H(T_i)$, and is defined as:
+    \begin{equation}
+      H(T_i) = r_i + \gamma U(L(T_{i+1}))
+    \end{equation}
+  Agent calculates every $Q(T_i)$ for instances of leaf and those of immediate fringe nodes,
+  then determines whether they are from the same distribution. If they are not, those
+  fringe nodes would be promoted as leaves.
+
+  \item Agent performs $\epsilon$-greedy method to choose the next action, i.e., with
+  probability $1-\epsilon$ the agent chooses $a_{t+1}$ such that
+    \begin{equation}
+      a_{t+1} = \arg\max_{a \in A} Q(L(T_t), a)
+    \end{equation}
+  and with probability $\epsilon$ the agent chooses random action in $A$.
+  Time step increase to $t+1$ and jumps to step 2.
+\end{enumerate}
+
+There are two obvious deficiencies of the USM algorithm. Firstly, in the USM algorithm,
+the number of states may exponentially increase as the number of steps grows, but many
+states are redundant, which correspond to the same state in the real environment. Thus, it
+will reduce the efficiency of the algorithm. Secondly, since the initial Q value of all leaves
+is initialized with 0, the $\epsilon$-greedy policy may lead to overfitting. Because
+the $\epsilon$-greedy policy of USM treats the second best and the worst the same, it drastically
+decrease the probability to explore other actions which may get higher reward. For example,
+we found that in the first few steps, the agent may get negative default return after
+choosing actions at some states, which decreases the probability of exploring those actions
+when at those states again.
+
+\section{Compressed Suffix Memory Algorithm}
+
+In order to overcome the weaknesses of USM. We re-constructed the work flow of agent in maze
+environments. Firstly, we introduces the blind exploration. Exploration and exploitation
+is a key issue in reinforcement learning. Agent could first make a blind policy exploration
+of the environment, obtaining some heuristic experience, and apply it to following reinforcement
+learning. We found that the longest non-repetitive observations of the maze and the frequency
+of goals can decently presents the local complexity and the scale of the environment, respectively.
+The heuristic experience can be used to improve the algorithm:
+
+\begin{enumerate}
+  \item The depth of the suffix tree could be constrained. We tried to locate the redundant
+  states of USM and found a potential cause. The suffix tree may grow so deep that a leaf's
+  suffix is longer than most paths from start to goal. By deducing the length of most paths
+  from start to goal as $l$ and limiting the suffix tree's depth to $2l$ can reduce the
+  generation of less useful leaves. So we set $l$ as the sum of longest horizontal edge and
+  vertical edge found by the blind search, since in most situations, paths generated by
+  the best policy are shorter than $l$. \label{csm:l}
+
+  \item Instances in tree node could be denser. Instead of doing K-S test every $n$ instances
+  added, which may lead to overfitting at some leaves, agent only triggers K-S test when leaves
+  and their fringe nodes are holding enough instances. The minimum number $b$ of instances to do K-S
+  test is deduced from blind exploration, since $b$ should vary with environment scale. In practice,
+  we find the frequency of goals in blind exploration well describes the environment scale.
+  \label{csm:b}
+
+  \item The $\epsilon$-greedy approach can be improved. The main problem of
+  $\epsilon$-greedy approach is that it treats the second best and the worst the same, hence
+  decreasing the probability to explore the second best action. We use boltzmann
+  sampling to balance between exploration and exploitation, which assigns actions with similar
+  Q value similar probabilities to encourage agent to explore or exploit them all, instead of
+  only the best. The probability to choose an action $a_i$ at leaf $s$ with temperature $t$ is
+    \begin{equation}
+    p(s, a_i) = e(s, a_i)/ \sum_a{e(s, a)} \label{equ:boltzmann},
+    \end{equation}  
+  which $e$ is
+    \begin{equation}
+        e(s, a) = \exp( (Q(s, a) - \max Q(s))/t )
+    \end{equation}
+
+\end{enumerate}
+
+The details of the CSM algorithm is as below (see Algorithm~\ref{alg:CSM}).
+
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{Compressed Suffix Algorithm}
+	\label{alg:CSM}
+	\begin{algorithmic}[1]
+		\REQUIRE iteration steps $n$, radom steps in iteration $n_r$
+		\ENSURE average discounted return $E(r)$
+    \STATE Initialize path length $l$, and minimum number $b$ of instance required to do K-S test
+    by blind exploration
+    \STATE Initialize temperature $t$ as positive infinity
+    \STATE Initialize a suffix tree with depth limitation $2l$
+    \STATE Initialize agent with random start position
+		\FOR{$i=0$ to $n$}
+		  \IF{$i>n_r$}
+		    \STATE $t$ decreases from 0.5 to nearly 0 as $i$ increases
+      \ENDIF
+
+      \STATE Choose action $a$ by boltzmann sampling and execute it (see Equation~\ref{equ:boltzmann})
+      \WHILE{not moved after executed $a$}
+        \STATE Choose action $a$ by boltzmann sampling with higher $t$ and execute it
+      \ENDWHILE
+
+      \STATE Generate instance $T$ according to the execution of $a$ just now
+      \STATE Insert $T$ into the suffix tree, and find the leaf node $s$ the instance belongs
+      \STATE $I(s) = I(s) \cup {T_t}$
+      \STATE $Q(s,a) = R(s,a) + \gamma Pr(s'|s,a)U(s')$
+      \STATE $R(s,a) = {\sum_{T_i \in I(s,a)}r_i}/{|I(s,a)|}$
+      \STATE $Pr(s'|s,a) = {|\forall{T_i \in I(s,a) \ s.t. \ L(T_{i+1} = s')}|} / {|I(s,a)|}$
+      
+      \IF {$|I(s)| > b$}
+        \STATE do K-S test between $H(T)$s of $s$ and its fringe nodes, get p\_value $p$ 
+        \IF {$p<0.1$}
+          \STATE promote fringe nodes to leaves
+        \ENDIF
+      \ENDIF
+
+      \IF {agent at goal}
+        \STATE Initialize agent with random start position
+      \ENDIF
+    \ENDFOR
+    \STATE Use boltzmann sampling at low temperature on $Q(s, a)$ to produce average
+    discounted reward $E(r)$
+		\STATE \textbf{return} $E(r)$
+	\end{algorithmic}  
+\end{algorithm}
+
+\section{Experiment}
+
+\subsection{Experiment Setup}
+
+We run algorithm with three well-known benchmarks: Tiger-grid, Hallway and McCallum
+(see ~Figure \ref{fig:mazes}). The characteristics of POMDP benchmarks are described
+below (see ~Table \ref{table:benchmarks}), where $|S|$ denotes the number of states,
+$|A|$ denotes the number of actions and $|\Omega|$ denotes the number of observations.
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.45\textwidth]{mazes.png}
+  \caption{Benchmark mazes}
+  \label{fig:mazes}
+\end{figure}
+
+\begin{table}[h]
+  \caption{Benchmarks}
+  \label{table:benchmarks}
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+    problem         & $|S|$           & $|A|$          & $|\Omega|$\\
+    \midrule
+    Tiger-Grid      & 36              & 4              & 17        \\
+    Hallway         & 60              & 4              & 21        \\
+    McCallum        & 92              & 4              & 17        \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In Tiger-Grid, the agents are initially assigned to one of two definite starting positions.
+The probability of each starting position is 0.5. The goal of the model is to make the agent
+reach the target position as soon as possible. Once the agent reaches the target position,
+it is reset to two starting positions. The action of the agent includes: moving forward, turning left,
+turning right and turning backwards. Tiger-Grid's maze world contains two punitive positions,
+and the agent will receive a negative return after entering these locations. 
+
+Hallway problems are similar to Tiger-Grid issues but has some differences. When the agent
+arrives at the target, Hallway will reset the agent to a random state in the labyrinth.
+The Hallway problem does not include a penalty position, and add landmarks to the four places
+for observation.
+
+In McCallum, the agent’s task is to navigate to the goal using action for moving north,
+south, east and west. After reaching the goal, the agent executes any action and begins a new
+trail in a randomly chosen corner of the world. The agent receives reward 5.0 upon reaching
+the goal, and reward -0.1 otherwise.
+
+In the experiment, we evaluate the following criteria:
+
+\begin{enumerate}
+  \item Average discounted reward (ADR), $E(r)$
+  \begin{equation}
+    \frac{\sum_{i=0}^{n_{trails}} \sum_{j=0}^{n_{steps}} \gamma^j r^j}{n_{trails}},
+  \end{equation}
+  ADR is widely considered to be a good evaluation of the quality of a value function.
+  
+  \item Iteration duration, which measures the speed of making decision in each iteration.
+\end{enumerate}
+
+Our experiment uses a discount factor $\gamma=0.9$, a exploration probability $\epsilon=0.1$.
+The boundary value of the Kolmogorov-Smirnov test is $p=0.1$. We iterate the USM, CSM and random algorithm
+1024 times, and set check points per 48 iteration. In each check point we test our model 128 times
+within 48 steps, i.e., get 128 ADRs. We will show the changes in average ADR along with runtime in
+different benchmarks.
+
+\subsection{Experiment Result}
+
+The Experiment result of CSM, USM and random algorithm are shown below.
+
+\begin{figure}[h]
+  \centering
+  \subfigure{
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=2in]{tiger_grid_adr_time.png}
+    \end{minipage}
+  }
+  \caption{Performance of different agent on tiger grid}
+  \label{fig:tiger_grid_adr_time}
+\end{figure}
+
+Submissions to DAI should be made at the following site:
+\begin{center}
+  \small
+  \url{http://www.adai.ai/call-for-papers.html}
+\end{center}
+
+The paper length is limited to 6 pages, with 1 additional page containing only 
+bibliographic references. Authors may use as many pages of appendices (after 
+the bibliography) as they wish, but reviewers are not required to read these.
+Any paper exceeding this length (except for the appendices) will automatically 
+be rejected.
+
+\subsection{Style}
+
+Papers to be submitted to DAI 2019 must be prepared by \LaTeX{} using the style 
+file \verb+dai_2019.sty+. As the review process is double blind, please use the 
+style package as 
+\begin{verbatim}
+  \usepackage{dai_2019}
+\end{verbatim}
+which automatically anonymizes the submission.
+
+The style file also provide an optional option \verb+final+, which creates a 
+a camera-ready for your paper
+\begin{verbatim}
+  \usepackage[final]{dai_2019}
+\end{verbatim}
+
+The paper size, font sizes, margins, spaces between lines and headers or around 
+figures/tables, etc, preset by the style file must {\em not} be modified. Any 
+modification would lead to rejection without further notification.
+
+\section{Headings: first level}
+
+Example for first-level headings.
+
+\subsection{Headings: second level}
+
+Example for second-level headings.
+
+\subsubsection{Headings: third level}
+
+Example for third-level headings.
+
+\subsubsubsection{Headings: forth level}
+
+Example for forth-level headings.
+
+\paragraph{Paragraphs}
+
+Example for paragraphs.
+
+\section{Citations, figures, tables, references}
+
+\subsection{Citations} 
+
+The \verb+natbib+ package will be used by default. The citation format could be 
+author/year or numeric, as long as it is internally consistent. As the 
+submission is double blind, please refer to your own work in the third person.
+
+\subsection{Figures}
+
+Example for figures (see Figure~\ref{fig:example}).
+
+\begin{figure}[h]
+  \centering
+  \fbox{\rule[-.5cm]{0cm}{2cm} \rule[-.5cm]{5cm}{0cm}}
+  % \includegraphics[width=0.8\textwidth]{figure_filename.png}
+  \caption{Example figure caption.}
+  \label{fig:example}
+\end{figure}
+
+\subsection{Tables}
+
+Example for tables (see Table~\ref{table:example}).
+
+\begin{table}[h]
+  \caption{Example table caption.}
+  \label{table:example}
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    \multicolumn{2}{c}{Alpha}                   \\
+    \cmidrule(r){1-2}
+    Beta     & Gamma     & Delta \\
+    \midrule
+    $x^2$     & $f(y)$ & $z \sim \mathcal{N}(0, 1)$      \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{References}
+
+It is acceptable to reduce the font size to \verb+\small+ when listing the 
+references.
+
+\subsubsection*{Acknowledgments}
+
+Do not include acknowledgments in the submission, only in the final paper.
+
+% References
+\clearpage
+\small
+\bibliographystyle{named}
+\bibliography{dai_2019}
+
+% Appendix
+\clearpage
+\normalsize
+\appendix
+\section{Example appendix section}
+\subsection{Example appendix subsection}
+\section{Another example appendix section}
+
+As long as you need contents in appendices.
+
+\end{document}
