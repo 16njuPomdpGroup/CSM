@@ -21,7 +21,7 @@
 
 % your custom packages, macros, etc.
 
-\title{CSM: An Improved Algorithm for Instance-based Reinforcement Learning%\thanks{Title notes.}
+\title{Compressed Suffix Memory Algorithm for Reinforcement Learning%\thanks{Title notes.}
 }
 
 % Please use \And between authors, or use \AND to force line breaking.
@@ -340,7 +340,7 @@ The details and the pseudo code (see Algorithm~\ref{alg:CSM}) form of the CSM al
 	\label{alg:CSM}
 	\begin{algorithmic}[1]
 		\REQUIRE iteration steps $n$, radom steps in iteration $n_r$
-		\ENSURE average discounted return $E(r)$
+		\ENSURE average discounted return $ADR$
     \STATE Initialize path length $l$, and minimum number $b$ of instance required to do K-S test
     by blind exploration
     \STATE Initialize temperature $t$ as positive infinity
