@@ -417,8 +417,8 @@ $|A|$ denotes the number of actions and $|\Omega|$ denotes the number of observa
 In Tiger-Grid, the agents are initially assigned to one of two definite starting positions.
 The probability of each starting position is 0.5. The goal of the model is to make the agent
 reach the goal position as soon as possible. Once the agent reaches the goal position,
-it is reset to two starting positions. The action of the agent includes: moving forward, turning left,
-turning right and turning backwards. Tiger-Grid's maze world contains two punitive positions,
+it is reset to two starting positions. The action of the agent includes: moving forward, moving left,
+moving right and moving backwards. Tiger-Grid's maze world contains two punitive positions,
 and the agent will receive a negative return after entering these locations. 
 
 Hallway problems are similar to Tiger-Grid problem but has some differences. When the agent
@@ -556,13 +556,19 @@ the start of the experiment, and as the experiment progressed, the ADR of the CS
 was basically stable at 6. In contrast, the experimental results of the USM algorithm
 did not increase significantly in the early stage of the experiment, and only showed
 a growth trend in the later stage of the experiment. Despite this, USM's final ADR
-is only about 3, far less than CSM. This shows that in the case of McCallum Maze problem, CSM can explore the whole problem and find the optimal strategy more quickly and better than USM.
+is only about 3, far less than CSM. This shows that in the case of McCallum Maze problem, 
+CSM can explore the whole problem and find the optimal strategy more quickly and better than USM.
 
 In large dataset problems, such as the Prim Maze problem in the experiment, CSM can also perform 
 faster and better than USM. From the experimental results, the CSM achieved a stable maximum ADR 8 
 in about 20 seconds, while the USM had an ADR of less than 5 in the same time. Even in the mid-term 
 of the experiment, USM has experienced rapid growth, but its time cost is almost three times that of 
 CSM, and ADR is still lower than CSM.
+
+In addition, it can be seen from the experimental results that at the beginning of the experiment, although both algorithms have not gained experience through learning, CSM has obtained a higher ADR than USM. This can be explained in two ways.
+First, because the CSM algorithm uses the Boltzmann algorithm to explore, the agent does not perform only the optimal action at the stage of exploitation like the USM does, but other non-optimal actions have a certain probability to be executed.
+Secondly, because CSM uses a strategy of not going back to go forward bolder, when it does not fall into a dead end.
+It is for these two reasons that CSM is able to explore the full maze and discover the goal faster than the USM, thus obtaining a higher ADR.
 
 
 Overall, It can be seen that the CSM algorithm is superior to the USM algorithm.in terms of speed and return.
