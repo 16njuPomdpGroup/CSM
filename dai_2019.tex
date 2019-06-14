@@ -416,13 +416,13 @@ $|A|$ denotes the number of actions and $|\Omega|$ denotes the number of observa
 
 In Tiger-Grid, the agents are initially assigned to one of two definite starting positions.
 The probability of each starting position is 0.5. The goal of the model is to make the agent
-reach the target position as soon as possible. Once the agent reaches the target position,
+reach the goal position as soon as possible. Once the agent reaches the goal position,
 it is reset to two starting positions. The action of the agent includes: moving forward, turning left,
 turning right and turning backwards. Tiger-Grid's maze world contains two punitive positions,
 and the agent will receive a negative return after entering these locations. 
 
-Hallway problems are similar to Tiger-Grid issues but has some differences. When the agent
-arrives at the target, Hallway will reset the agent to a random state in the labyrinth.
+Hallway problems are similar to Tiger-Grid problem but has some differences. When the agent
+arrives at the goal, Hallway will reset the agent to a random state in the maze.
 The Hallway problem does not include a penalty position, and add landmarks to the four places
 for observation.
 
@@ -431,6 +431,9 @@ south, east and west. After reaching the goal, the agent executes any action and
 trail in a randomly chosen corner of the world. The agent receives reward 5.0 upon reaching
 the goal, and reward -0.1 otherwise.
 
+We used the Prim algorithm to randomly generate a larger maze called Prim Maze. 
+When the agent arrives at the goal, Prim Maze will reset the agent to a random state in the maze.
+The agent receives reward 96.0 upon reaching the goal, and reward -0.1 otherwise.
 
 
 In the experiment, we evaluate the following criteria:
@@ -465,7 +468,7 @@ The experiment results of CSM, USM and random algorithm are shown in  Table \ref
 		\hline
 		& \multicolumn{2}{c|}{Max ADR} & \multicolumn{2}{c|}{Time to Max ADR/sec} \\ \hline
 		& USM           & CSM          & USM                 & CSM                \\ \hline
-		Tiger Grid &3.81              & 8.70            &10.75                   & 9.45                  \\ \hline
+		Tiger-Grid &3.81              & 8.70            &10.75                   & 9.45                  \\ \hline
 		Hallway    & 8.43             & 10.13             & 13.52                 & 6.67                  \\ \hline
 		McCallum   & 2.82             &5.90          & 34.39                  & 14.15                 \\ \hline
 		Prim Maze  &7.13            & 8.30           &49.30                   & 18.24                 \\ \hline
