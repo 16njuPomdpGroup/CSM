@@ -438,14 +438,14 @@ We evaluate average discounted reward, $ADR$, in the experiment:
 \begin{equation}
   ADR = \frac{\sum_{i=0}^{n_{trails}} \sum_{j=0}^{n_{steps}} \gamma^j r^j}{n_{trails}}, \label{equ:adr}
 \end{equation}
-ADR is widely considered to be a good evaluation of the quality of a value function. The higher
-the ADR is, the more intelligent the agent is considered to be. We track the changing of ADR through time
+$ADR$ is widely considered to be a good evaluation of the quality of a value function. The higher
+the $ADR$ is, the more intelligent the agent is considered to be. We track the changing of $ADR$ through time
 to determine whether CSM helps the agent to learn faster and better.
   
 Our experiment uses a discount factor $\gamma=0.9$, an exploration probability $\epsilon=0.1$ for USM.
 The boundary value of the Kolmogorov-Smirnov test is $p=0.1$. We iterate the USM, CSM and random algorithm
 2048 times, and set check points per 48 iteration. In each check point we test our model 256 times
-within 96 steps, i.e., $n_trial$ is 256 (see Equation~\ref{equ:adr}) in $ADR$ calculation.
+within 96 steps, i.e., $n_{trial}$ is 256 (see Equation~\ref{equ:adr}) in $ADR$ calculation.
 
 \subsection{Experiment Results}
 
@@ -453,7 +453,7 @@ within 96 steps, i.e., $n_trial$ is 256 (see Equation~\ref{equ:adr}) in $ADR$ ca
 %(see Figure~
 %\ref{fig:tiger_grid_result}, \ref{fig:agent_duration_step}).
 The experiment results of CSM, USM and random algorithm are shown below (see Figure~\ref{fig:agent_adr_time}).
-It should be noted that even if $n_trail$-set to 256-seems large enough, the results of ADR may still fluctuate.
+It should be noted that even if $n_trail$-set to 256-seems large enough, the results of $ADR$ may still fluctuate.
 Therefore, we record the ($ADR$, time) tuple in table below (see Table \ref{table:results}), when $ADR$ first
 becomes satisfiable, rather than the maximum.
 
