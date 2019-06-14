@@ -384,7 +384,7 @@ The details and the pseudo code (see Algorithm~\ref{alg:CSM}) form of the CSM al
 
 \subsection{Experiment Setup}
 
-We run algorithm with three well-known benchmarks: Tiger-grid, Hallway and McCallum
+We run algorithms with three well-known benchmarks: Tiger-Grid, Hallway and McCallum
 (see ~Figure \ref{fig:mazes}). The characteristics of POMDP benchmarks are described
 below (see ~Table \ref{table:benchmarks}), where $|S|$ denotes the number of states,
 $|A|$ denotes the number of actions and $|\Omega|$ denotes the number of observations.
@@ -392,6 +392,7 @@ $|A|$ denotes the number of actions and $|\Omega|$ denotes the number of observa
 \begin{figure}[h]
   \centering
     \includegraphics[width=0.30\textwidth]{mazes.png}
+    \includegraphics[width=0.30\textwidth]{06-13-21-48/prim_maze_with_caption.png}
   \caption{Benchmark mazes}
   \label{fig:mazes}
 \end{figure}
@@ -404,9 +405,10 @@ $|A|$ denotes the number of actions and $|\Omega|$ denotes the number of observa
     \toprule
     problem         & $|S|$           & $|A|$          & $|\Omega|$\\
     \midrule
-    Tiger-Grid      & 36              & 4              & 17        \\
-    Hallway         & 60              & 4              & 21        \\
-    McCallum        & 92              & 4              & 17        \\
+    Tiger-Grid      & 9              & 4              & 7        \\
+    Hallway         & 15           & 4              & 4        \\
+    McCallum        & 23              & 4              & 9        \\
+    Prim Maze        & 167              & 4              & 16        \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -446,32 +448,82 @@ The boundary value of the Kolmogorov-Smirnov test is $p=0.1$. We iterate the USM
 within 48 steps, i.e., get 128 ADRs. We will show the changes in average ADR along with runtime in
 different benchmarks.
 
-\subsection{Experiment Result}
+\subsection{Experimental Results}
 
-The Experiment result of CSM, USM and random algorithm are shown below (see Figure~
-\ref{fig:agent_adr_time}, \ref{fig:agent_duration_step}).
+The experimental results of CSM, USM and random algorithm are shown in  Table \ref{table:results} and Figure  \ref{fig:tiger_grid_result} to \ref{fig:prim_maze_result}.
+%(see Figure~
+%\ref{fig:tiger_grid_result}, \ref{fig:agent_duration_step}).
 
-\begin{figure}[tbp]
+\begin{table}[]
+	  \caption{Experimental Results}
+	\label{table:results}
 	\centering
-	\subfloat[Tiger Grid]{\includegraphics[width=1.5in]{tiger_grid_adr_time.png}}\quad
-  \subfloat[Hallway]{\includegraphics[width=1.5in]{hallway_adr_time.png}}\quad	
-  \subfloat[McCallum]{\includegraphics[width=1.5in]{mccallum_adr_time.png}}\quad
-  \subfloat[Prim]{\includegraphics[width=1.5in]{mccallum_adr_time.png}}\\
-  \caption{Performance of different agent on different benchmarks; y-axis is average ADR value,
-  x-axis is runtime in seconds.}
-  \label{fig:agent_adr_time}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		& \multicolumn{2}{c|}{Max ADR} & \multicolumn{2}{c|}{Time to Max ADR/sec} \\ \hline
+		& USM           & CSM          & USM                 & CSM                \\ \hline
+		Tiger Grid &3.81              & 8.70            &10.75                   & 9.45                  \\ \hline
+		Hallway    & 8.43             & 10.13             & 13.52                 & 6.67                  \\ \hline
+		McCallum   & 2.82             &5.90          & 34.39                  & 14.15                 \\ \hline
+		Prim Maze  &7.13            & 8.30           &49.30                   & 18.24                 \\ \hline
+	\end{tabular}
+\end{table}
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{06-13-21-48/tiger_grid_result.png} %1.png是图片文件的相对路径
+	\caption{ADR by time(sec) for Tiger-Grid} %caption是图片的标题
+	\label{fig:tiger_grid_result} %此处的label相当于一个图片的专属标志，目的是方便上下文的引用
 \end{figure}
 
-\begin{figure}[tbp]
+\begin{figure}
 	\centering
-	\subfloat[Tiger Grid]{\includegraphics[width=1.5in]{tiger_grid_adr_time.png}}\quad
-  \subfloat[Hallway]{\includegraphics[width=1.5in]{hallway_adr_time.png}}\quad	
-  \subfloat[McCallum]{\includegraphics[width=1.5in]{mccallum_adr_time.png}}\quad
-  \subfloat[Prim]{\includegraphics[width=1.5in]{mccallum_adr_time.png}}\\
-  \caption{Iteration durations of different agent on different benchmarks; y-axis is
-  runtime in seconds, x-axis is iteration step.}
-  \label{fig:agent_duration_step}
+	\includegraphics[width=0.5\textwidth]{06-13-21-48/hallway_result.png} %1.png是图片文件的相对路径
+	\caption{ADR by time(sed) for Hallway} %caption是图片的标题
+	\label{fig:hallway_result} %此处的label相当于一个图片的专属标志，目的是方便上下文的引用
 \end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{06-13-21-48/mccallum_result.png} %1.png是图片文件的相对路径
+	\caption{ADR by time(sec) for McCallum} %caption是图片的标题
+	\label{fig:mccallum_result} %此处的label相当于一个图片的专属标志，目的是方便上下文的引用
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{06-13-21-48/prim_maze_result.png} %1.png是图片文件的相对路径
+	\caption{ADR by time(sec) for Prim Maze} %caption是图片的标题
+	\label{fig:prim_maze_result} %此处的label相当于一个图片的专属标志，目的是方便上下文的引用
+\end{figure}
+
+
+%\begin{figure}[tbp]
+%	\centering
+%	\subfloat[Tiger Grid]{\includegraphics[width=1.5in]{tiger_grid_adr_time.png}}\quad
+%  \subfloat[Hallway]{\includegraphics[width=1.5in]{hallway_adr_time.png}}\quad	
+%  \subfloat[McCallum]{\includegraphics[width=1.5in]{mccallum_adr_time.png}}\quad
+%  \subfloat[Prim]{\includegraphics[width=1.5in]{mccallum_adr_time.png}}\\
+% 
+% 
+%  \caption{Performance of different agent on different benchmarks; y-axis is average ADR value,
+%  x-axis is runtime in seconds.}
+%  
+%  
+%  \label{fig:agent_adr_time}
+%\end{figure}
+%
+%\begin{figure}[tbp]
+%	\centering
+%	\subfloat[Tiger Grid]{\includegraphics[width=1.5in]{tiger_grid_adr_time.png}}\quad
+%  \subfloat[Hallway]{\includegraphics[width=1.5in]{hallway_adr_time.png}}\quad	
+%  \subfloat[McCallum]{\includegraphics[width=1.5in]{mccallum_adr_time.png}}\quad
+%  \subfloat[Prim]{\includegraphics[width=1.5in]{mccallum_adr_time.png}}\\
+%  \caption{Iteration durations of different agent on different benchmarks; y-axis is
+%  runtime in seconds, x-axis is iteration step.}
+%  \label{fig:agent_duration_step}
+%\end{figure}
 
 
 \subsection{Experiment Result Analysis}
