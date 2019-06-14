@@ -448,14 +448,14 @@ The boundary value of the Kolmogorov-Smirnov test is $p=0.1$. We iterate the USM
 within 48 steps, i.e., get 128 ADRs. We will show the changes in average ADR along with runtime in
 different benchmarks.
 
-\subsection{Experimental Results}
+\subsection{Experiment Results}
 
-The experimental results of CSM, USM and random algorithm are shown in  Table \ref{table:results} and Figure  \ref{fig:tiger_grid_result} to \ref{fig:prim_maze_result}.
+The experiment results of CSM, USM and random algorithm are shown in  Table \ref{table:results} and Figure  \ref{fig:tiger_grid_result} to \ref{fig:prim_maze_result}.
 %(see Figure~
 %\ref{fig:tiger_grid_result}, \ref{fig:agent_duration_step}).
 
 \begin{table}[]
-	  \caption{Experimental Results}
+	  \caption{Experiment Results}
 	\label{table:results}
 	\centering
 	\begin{tabular}{|c|c|c|c|c|}
@@ -526,28 +526,30 @@ The experimental results of CSM, USM and random algorithm are shown in  Table \r
 %\end{figure}
 
 
-\subsection{Experiment Result Analysis}
+\subsection{Experiment Results Analysis}
 
-In the Tiger Grid problem, the CSM algorithm quickly reached a very high ADR in a short
+On the Tiger-Grid problem, the CSM algorithm quickly reached a very high ADR in a short
 time after the start of the experiment, and as the experiment progressed, the ADR of the
 CSM was basically stable at around 8. In contrast, the experimental results of the USM
 algorithm have large fluctuations in the early stage of the experiment, and the
-experimental results in the latter part of the experiment are basically stable at 3.5, which
-is much lower than the CSM.
+experimental results in the latter part of the experiment are basically stable at 4, which
+is only half of the CSM.
 
-In the Hallway problem, the experimental results of the two algorithms show large
-fluctuations, which is related to the existence of more hidden states in the Hallway
-problem. Despite this, CSM's ADR is twice as large as USM.
+On the Hallway problem, the experimental ADR results of both algorithms showed large fluctuations, and they had very similar stable maximum ADR. However, from the time point of view, the CSM algorithm reaches the stable maximum ADR running time is only half of the USM, that is, the CSM has twice the processing speed of the USM on the Hallway problem.
 
-In the McCallum Maze problem, similar to the performance in the Tiger Grid
+%In the Hallway problem, the experimental results of the two algorithms show large
+%fluctuations, which is related to the existence of more hidden states in the Hallway
+%problem. Despite this, CSM's ADR is twice as large as USM.
+
+On the McCallum Maze problem, similar to the performance in the Tiger Grid
 problem, the CSM algorithm quickly reached a very high ADR in the short time after
 the start of the experiment, and as the experiment progressed, the ADR of the CSM
 was basically stable at 6. In contrast, the experimental results of the USM algorithm
 did not increase significantly in the early stage of the experiment, and only showed
 a growth trend in the later stage of the experiment. Despite this, USM's final ADR
-is only about 2, far less than CSM. This shows that in the case of a large problem
-set, CSM can explore the whole problem more quickly and better than USM, and find
-the optimal strategy.
+is only about 3, far less than CSM. This shows that in the case of McCallum Maze problem, CSM can explore the whole problem and find the optimal strategy more quickly and better than USM.
+
+
 
 Overall, It can be seen that the CSM algorithm is superior to the USM algorithm.
 
