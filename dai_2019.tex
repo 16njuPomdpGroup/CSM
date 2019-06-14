@@ -535,7 +535,10 @@ algorithm have large fluctuations in the early stage of the experiment, and the
 experimental results in the latter part of the experiment are basically stable at 4, which
 is only half of the CSM.
 
-On the Hallway problem, the experimental ADR results of both algorithms showed large fluctuations, and they had very similar stable maximum ADR. However, from the time point of view, the CSM algorithm reaches the stable maximum ADR running time is only half of the USM, that is, the CSM has twice the processing speed of the USM on the Hallway problem.
+On the Hallway problem, the experimental ADR results of both algorithms showed large fluctuations, 
+and they had very similar stable maximum ADR. However, from the time point of view, the CSM 
+algorithm reaches the stable maximum ADR running time is only half of the USM, that is, the CSM 
+has twice the processing speed of the USM on the Hallway problem.
 
 %In the Hallway problem, the experimental results of the two algorithms show large
 %fluctuations, which is related to the existence of more hidden states in the Hallway
@@ -549,11 +552,14 @@ did not increase significantly in the early stage of the experiment, and only sh
 a growth trend in the later stage of the experiment. Despite this, USM's final ADR
 is only about 3, far less than CSM. This shows that in the case of McCallum Maze problem, CSM can explore the whole problem and find the optimal strategy more quickly and better than USM.
 
+In large dataset problems, such as the Prim Maze problem in the experiment, CSM can also perform 
+faster and better than USM. From the experimental results, the CSM achieved a stable maximum ADR 8 
+in about 20 seconds, while the USM had an ADR of less than 5 in the same time. Even in the mid-term 
+of the experiment, USM has experienced rapid growth, but its time cost is almost three times that of 
+CSM, and ADR is still lower than CSM.
 
 
-Overall, It can be seen that the CSM algorithm is superior to the USM algorithm.
-
-
+Overall, It can be seen that the CSM algorithm is superior to the USM algorithm.in terms of speed and return.
 
 
 \section{Conclusion}
