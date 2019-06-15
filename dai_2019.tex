@@ -59,17 +59,17 @@
 \maketitle 
 
 \begin{abstract}
-  Instance-based approaches are effective ways to solve reinforcement
-  learning problems. Utile Suffix Memory (USM) algorithm has shown decent results for
-  distinguishing different states from instance chains and generating Q-value 
-  of actions of each state, but involving exponentially expanded state space and
-  a number of redundant states. In this paper we propose a new state space compressed
-  algorithm, called Compressed Suffix Memory (CSM) algorithm. CSM algorithm obtains
-  heuristic information of environments by blind exploration, for example, the path length
-  of most solutions and goal frequencies, to improve efficiency and resist overfitting.
-  We use Boltzmann sampling to balance between exploration and exploitation. Our experiments
-  show that both the efficiency and the effect have been improved a lot by CSM algorithm
-  compared with USM algorithm.
+  Instance-based approaches are effective ways to solve reinforcement learning problems.
+  Utile Suffix Memory (USM) algorithm has shown decent results for distinguishing different
+  states from instance chains and generating Q-value of actions of each state, but involving
+  exponentially expanded state space and a number of redundant states. In this paper we
+  propose a new state space compressed algorithm, called Compressed Suffix Memory (CSM)
+  algorithm. CSM algorithm obtains heuristic information of the environment by a blind
+  exploration, for example, the maximum L1 distance between instances in instance chains
+  and goal frequencies, to improve efficiency and resist overfitting. Boltzmann sampling
+  is adopted to balance between exploration and exploitation. Experiments show that both
+  the efficiency and the effect have been improved a lot by CSM algorithm compared with
+  USM algorithm.
 \end{abstract}
 
 \section{Introduction}
@@ -101,8 +101,8 @@ algorithm, which optimizes the generation of a utile tree and decision process.
 First, the heuristic information is obtained by the blind exploration
 of the environment, e.g., $l$ as the effective path length from start to goal
 and $p$ as the probability of goal during the exploration. Second, the maximum
-depth of the suffix tree is limited to doubled $l$ and the minimum instances required
-to trigger state splitting is deduced from $p$. Finally, after initializing the agent
+depth of the suffix tree is limited to $2l$ and the minimum instances required
+to trigger state splitting, the threshold $b$, is deduced from $p$. Finally, after initializing the agent
 with a random policy, Boltzmann sampling approach will be applied. Experiment has shown
 that both the efficiency and the effect have been greatly improved by CSM algorithm compared
 with USM algorithm.
