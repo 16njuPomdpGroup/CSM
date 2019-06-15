@@ -86,14 +86,14 @@ sequential problems by calculating the Q-value of actions.
 
 As the agent does not directly observe the underlying state, the generation of
 the state space is the key to reinforcement learning algorithms.
-Many instance based methods have been put forward, including Nearest Sequence
+Many instance-based methods have been put forward, including Nearest Sequence
 Memory (NSM) algorithm \cite{mccallum1997reinforcement} and Utile Suffix Memory
-(USM) algorithms \cite{mccallum1995instance}. USM algorithm presents the state space by
+(USM) algorithm \cite{mccallum1995instance}. USM algorithm presents the state space by
 tree-nodes in a suffix tree building from the instance chains, and is proved
 effective maximizing the Q-value of actions. However, the state space of USM
 algorithm exponentially expands during iteration and comprises many redundant
 states, which reduces the efficiency. Furthermore, because the $\epsilon$-greedy
-policy of USM lack of exploitation of overall information, it may lead to
+policy of USM lacks of the exploitation of overall information, it may lead to
 overfitting.
 
 In this paper, we propose a new algorithm, called Compressed Suffix Memory (CSM)
@@ -103,16 +103,16 @@ of the environment, e.g., $l$ as the effective path length from start to goal
 and $p$ as the probability of goal during the exploration. Second, the maximum
 depth of the suffix tree is limited to doubled $l$ and the minimum instances required
 to trigger state splitting is deduced from $p$. Finally, after initializing the agent
-with a random policy, boltzmann sampling approach will be applied. Experiment has shown
-that both the efficiency and the effect have been greatly improved by CSM compared
-with USM.
+with a random policy, Boltzmann sampling approach will be applied. Experiment has shown
+that both the efficiency and the effect have been greatly improved by CSM algorithm compared
+with USM algorithm.
 
 The paper outline follows. We will briefly review reinforcement in partially observable
 environment and Utile Suffix Memory (USM) algorithm, in Section 2.
-Next we propose Compressed Suffix Memory (CSM) algorithm, which takes advantage of
+Next, we propose Compressed Suffix Memory (CSM) algorithm, which takes advantage of
 heuristic information and optimizes the generation of the suffix tree, in Section 3.
-We measure the performance of CSM and see improvements comparing with USM, in Section 4.
-We close in Section 5, with a brief summary and possible means of improvement of CSM.
+We measure the performance of CSM algorithm and see improvements comparing with USM algorithm, in Section 4.
+We close in Section 5, with a brief summary and possible means of improvement of CSM algorithm.
 
 \section{Background}
 
@@ -123,7 +123,7 @@ and produce a maximized reward in a provided environment. In general, a
 reinforcement learning agent interacts with the environment over time.
 At each time step $t$, it determines its state $s_t$ from a state space $S$,
 and chooses a best action $a_t$ from an action space $A$ according to the policy
-$\pi$. The agent gets a instant reward $r_t$ according to the reward function
+$\pi$. The agent gets an instant reward $r_t$ according to the reward function
 $R(s_t, a_t)$ and transfer to the next state $s_{t+1}$ according to the transition
 probability $T(s_{t+1}|s_t, a_t)$. The reward is normally discounted with factor
 $\gamma\in(0,1]$, and the   accumulated reward at $t_n$ is defined as
@@ -151,7 +151,7 @@ For example, the states of a model can be expressed by some nearest observations
 and internal states of an agent. After learning the state space, the agent can make
 decisions using model-free methods, such as HQ-learning \cite{wiering1997hq}.
 
-\begin{figure}[b]
+\begin{figure}[h]
   \centering
     \includegraphics[width=0.45\textwidth]{agent_with_memory.png}
   \caption{The agent model that has internal memory}
@@ -165,9 +165,9 @@ Suffix Memory (USM) algorithms are based on the instances.
 
 \subsection{Utile Suffix Memory Algorithm}
 
-The interaction between the agent implementing USM and the environment is described by
+The interaction between the agent implementing USM algorithm and the environment is described by
 $A, O, R$, which are finite set of actions, finite set of observations and a reward function.
-Like other instance based algorithms, USM records each of its raw instances
+Like other instance-based algorithms, USM algorithm records each of its raw instances
 \cite{mccallum1995instance}. At each time step $t$, the agent executes action
 $a_t \in A$ to get a new instance, gets observation $o_{t+1} \in O$, and get a
 instant reward $r_{t+1}$ according to $R$, which is determined by the environment.
@@ -178,7 +178,7 @@ A new instance is formulated as
 $T_{t+1}$ is $T_t$'s successor. It is obvious that instance chains are built
 from during learning process.
 
-In order to deduce state space from those instance chains, USM creates a suffix tree,
+In order to deduce state space from those instance chains, USM algorithm creates a suffix tree,
 whose leaves present the state space and store clustered instances. Each node of the tree
 can thus be uniquely identified by the string of labels on the path from node to the root,
 and the string is called the node’s suffix. An instance is always deposited into the
@@ -189,12 +189,12 @@ The set of instances that a node contains is written as $I(s)$. The suffix tree 
 instance $T$ belongs to is written as $L(T)$. It is inevitable that the action layer and
 the observation layer appears alternately when tree grows (see Figure~\ref{fig:suffix tree}).
 
-\begin{figure}[b]
+\begin{figure}[h]
   \centering
     \includegraphics[width=0.45\textwidth]{usm_sample.jpg}
   \caption{The agent navigates itself in a maze (probably not the first time), generates
   a sequence of instances, and builds a suffix tree. The action layer and
-  the observation layer appears alternately.}
+  the observation layer appear alternately.}
   \label{fig:suffix tree}
 \end{figure}
 
@@ -207,16 +207,16 @@ will stores the instance that matches suffix $[o_{t-2}, a_{t-2}, o_{t-1}, a_{t-1
 whether it should promote fringe nodes to leaves by Kolmogorov-Smirnov test, which determine the
 instances in the fringes and that of their parent are drawn the same distribution.
 
-The steps of USM is as below:
+The steps of USM algorithm is as below:
 
 \begin{enumerate}
-  \item The agent begins with a suffix tree that comprises a root node and an layer of
+  \item The agent begins with a suffix tree that comprises a root node and a layer of
   observation nodes as leaves, i.e., the agent only acts according to its observation.
 
   \item The agent chooses an action according to $\epsilon$-greedy policy, executes it and
   generates an instance (see Equation ~\ref{equ:instance}).
 
-  \item The agent insert the instance into the suffix tree. The instance is classified to
+  \item The agent inserts the instance into the suffix tree. The instance is classified to
   leaves and fringes with the same suffix with that instance. 
 
   \item The agent triggers K-S test every $n$ additions of instance. If the Q-value of fringes
@@ -226,7 +226,7 @@ The steps of USM is as below:
   jumps to step 2.
 \end{enumerate}
 
-There are two obvious deficiencies of the USM algorithm. Firstly, in the USM algorithm,
+There are two obvious deficiencies of USM algorithm. Firstly, in USM algorithm,
 the number of states may exponentially increase as the number of steps grows, but many
 states are redundant, which correspond to the same state in the real environment. Thus, it
 will reduce the efficiency of the algorithm. Secondly, since the initial Q value of all leaves
@@ -244,31 +244,40 @@ of environment can help agent understand state space better. Agent could first m
 policy exploration of the environment, obtaining some interaction experience, and apply
 it to following reinforcement learning. The effective path length to goal and the frequency
 of goals decently represents the scale of the environment and can be used to improve the algorithm.
-In addition, the 
+In addition, more overall information should be considered.
 
 \begin{enumerate}
-  \item The depth of the suffix tree should be constrained. The 3rd Quartile of path lengths
-  to goal and the maximum tree depth are denoted as $l_3$ and $d$. Leaves with suffix longer
-  than $2l_3$ are considered redundant. During the learning process, $l_3$ decreases and $d$ increases,
-  and both become stable. However, the exploitation of immature policy can cause overfitting,
+  \item The depth of the suffix tree should be constrained. The $3^\textnormal{rd}$ Quartile of
+  path lengths to goal and the maximum tree depth are denoted as $l_3$ and $d$. Leaves with suffix longer
+  than $2l_3$ are considered redundant. However, the exploitation of immature policy can cause overfitting,
   which makes $d$ grows greater than $2l_3$. So, an alterable guardian depth $l$ is needed.
-  On the one hand, $l$ starts with a relatively small value and will gradually increase through
-  learning if it is less than $l_3$. On the other hand, $d$ will not grow greater than $2l$.
-  In each instance chain, the maximum L1 distance between each instance and the initial instance
-  can be calculated.
+  On the one hand, $l$ starts with a relatively small value and will gradually get closer
+  to $l_3$ through learning. On the other hand, $2l$ should always greater than $d$.
+  The initial $l$ is set as:
+  \begin{equation}
+    l = \max{L_T}/2,
+  \end{equation}
+  and will be updated as:
+  \begin{equation}
+    l \leftarrow l + \alpha (l_3 - l)  \ s.t. \ l + \alpha (l_3 - l)> d/2. \label{equ:l3}
+  \end{equation}
+  $L_T$ is a set of L1 distances, which comprises the maximum L1 distance between each
+  instance and the initial instance in each instance chain during the blind exploration;
+  $\alpha$ is the learning rate.
 
-  \item Instances in tree node could be denser. Instead of doing K-S test every $n$ instances
-  added, which may lead to overfitting at some leaves, agent only triggers K-S test when leaves
-  and their fringe nodes are holding enough instances. The minimum number $b$ of instances to do K-S
-  test is deduced from blind exploration, since $b$ should vary with environment scale. In practice,
-  we find the frequency of goals in blind exploration well describes the environment scale.
+  \item Instances in tree node should be denser. K-S test performs better with more statistical
+  sample. Agent should only trigger K-S test when leaves and their fringe nodes are holding enough
+  instances, namely, more than a threshold $b$. Because the ideal $b$ varies with environment itself.
+  In practice, as the frequency of goal in blind exploration, $p$, well describes the problem scale,
+  $b$ is strongly correlated with $p$. Agent is encouraged to match longer suffix when
+  problem scale is bigger. Therefore, the smaller the $p$ is, the smaller the $b$ is set.
 
-  \item The $\epsilon$-greedy approach can be improved. The main problem of
-  $\epsilon$-greedy approach is that it treats the second best and the worst the same, hence
-  decreasing the probability to explore the second best action. We use boltzmann
-  sampling to balance between exploration and exploitation, which assigns actions with similar
-  Q value similar probabilities to encourage agent to explore or exploit them all, instead of
-  only the best. The probability to choose an action $a_i$ at leaf $s$ with temperature $t$ is
+  \item More overall information should be taken into account. The main problem of
+  $\epsilon$-greedy approach is that it lacks the exploitation of overall information,
+  such as those Q-value which is not the maximum. We use Boltzmann sampling to balance between
+  exploration and exploitation, which assigns actions with similar Q-value similar executing
+  probabilities to encourage agent to exploit them all, rather than only the best.
+  The probability to choose an action $a_i$ at leaf $s$ with temperature $t$ is
     \begin{equation}
       p(s, a_i) = e(s, a_i)/ \sum_a{e(s, a)} \label{equ:boltzmann},
     \end{equation}  
@@ -279,25 +288,28 @@ In addition, the
 
 \end{enumerate}
 
-The details and the pseudo code (see Algorithm~\ref{alg:CSM}) form of the CSM algorithm is as below.
+The details and the pseudo code (see Algorithm~\ref{alg:CSM}) form of CSM algorithm is as below.
 
 \begin{enumerate}
 
   \item The agent begins with a suffix tree that comprises a root node and an layer of
   observation nodes as leaves, i.e., the agent only acts according to its observation.
 
-  \item The agent randomly explores the environment for a number of times. The agent deduces the
-  the effective path length $l$ to goal and minimum number $b$ of instances to do K-S test
-  in that exploration. The maximum depth of the suffix tree is set to $2l$.
+  \item The agent is initialized with a randomly policy. The guardian length $l$ and
+  minimum number of instances to do K-S test, $b$, are set during initialization. The
+  maximum depth of the suffix tree is set to $2l$.
 
   \item The agent executes action and interacts with the environment at time step $t$.
   It records its learning history as an instance $T_t$ (see Equation~\ref{equ:instance}).
-  For all $s$, no matter $s$ is leaf or fringe, if the suffix of $s$ matches the suffix of
-  $T_t$. Their instance set are updated as:
+  For each treenode $s$, if its suffix matches the suffix of $T_t$. Its instance
+  set are updated as:
     \begin{equation}
       I(s) \leftarrow I(s) \cup {T_t}.
     \end{equation}
   Let $L(T)$ be the leaf which instance $T$ belongs to. $L(T_t)$ is cached to agent memory.
+  $l$ is updated (see Equation~\ref{equ:l3}). If the agent reaches the goal,
+  it repositions itself randomly to one of the provided start positions, and updates
+  the value of $l_3$.
 
   \item For each instance added, the agent does one Bellman iteration with the leaves of
   of the states:
@@ -316,19 +328,20 @@ The details and the pseudo code (see Algorithm~\ref{alg:CSM}) form of the CSM al
       Pr(s'|s,a) = \frac{|\forall{T_i \in I(s,a) \ s.t. \ L(T_{i+1} = s')}|} {|I(s,a)|}.
     \end{equation}
   
-  \item Agent perform Kolmogorov-Smirnov when $L(T_t)$ is not the same as $L(T_{t-1})$ and
+  \item Kolmogorov-Smirnov is performed when $L(T_t)$ is not the same as $L(T_{t-1})$ and
   $L(T_t)$ holds enough instances (more than $b$). The expected discounted reward of instance
   $T_i$ is written as $H(T_i)$, and is defined as:
     \begin{equation}
       H(T_i) = r_i + \gamma U(L(T_{i+1}))
     \end{equation}
-  Agent calculates every $Q(T_i)$ for instances of leaf and those of immediate fringe nodes,
-  then determines whether they are from the same distribution. If they are not, those
+  Every $Q(T_i)$ of instances stored in leaf and those stored in immediate fringe nodes is
+  calculated. Therefore, $|A|$ pairs of smaple are prepared for Kolmogorov-Smirnov test. If
+  there existing a certain pair that is believed not from the same distribution, those
   fringe nodes would be promoted as leaves.
 
   \item Agent does Boltzmann sampling to choose the next action, i.e., with
   probability $p(s, a_i)$ the agent chooses $a_i$ as $a_{t+1}$ (see Equation~\ref{equ:boltzmann}).
-  In practice, we encourage agent to do random exploration for $n_r$ times, and then perform
+  In practice, agent is encouraged to do random exploration for $n_r$ times, and then perform
   Boltzmann sampling method with descendant temperature.
   Time step increase to $t+1$ and algorithm jumps to step 3.
 \end{enumerate}
@@ -341,7 +354,7 @@ The details and the pseudo code (see Algorithm~\ref{alg:CSM}) form of the CSM al
 	\begin{algorithmic}[1]
 		\REQUIRE iteration steps $n$, radom steps in iteration $n_r$
 		\ENSURE average discounted return $ADR$
-    \STATE Initialize path length $l$, and minimum number $b$ of instance required to do K-S test
+    \STATE Initialize guardian length $l$, and minimum number $b$ of instance required to do K-S test
     by blind exploration
     \STATE Initialize temperature $t$ as positive infinity
     \STATE Initialize a suffix tree with depth limitation $2l$
@@ -351,13 +364,16 @@ The details and the pseudo code (see Algorithm~\ref{alg:CSM}) form of the CSM al
 		    \STATE $t$ decreases from 0.5 to nearly 0 as $i$ increases
       \ENDIF
 
-      \STATE Choose action $a$ by boltzmann sampling and execute it (see Equation~\ref{equ:boltzmann})
+      \STATE Choose action $a$ by Boltzmann sampling and execute it (see Equation~\ref{equ:boltzmann})
       \WHILE{not moved after executed $a$}
-        \STATE Choose action $a$ by boltzmann sampling with higher $t$ and execute it
+        \STATE Choose action $a$ by Boltzmann sampling with higher $t$ and execute it
+      \IF{the agent reaches goal}
+		    \STATE Update $l_3$
+      \ENDIF
       \ENDWHILE
 
       \STATE Generate instance $T$ according to the execution of $a$ just now
-      \STATE Insert $T$ into the suffix tree, and find the leaf node $s$ the instance belongs
+      \STATE Insert $T$ into the suffix tree, update $l$, and find the leaf node $s$ the instance belongs
       \STATE $I(s) = I(s) \cup {T_t}$
       \STATE $Q(s,a) = R(s,a) + \gamma Pr(s'|s,a)U(s')$
       \STATE $R(s,a) = {\sum_{T_i \in I(s,a)}r_i}/{|I(s,a)|}$
@@ -374,7 +390,7 @@ The details and the pseudo code (see Algorithm~\ref{alg:CSM}) form of the CSM al
         \STATE Initialize agent with random start position
       \ENDIF
     \ENDFOR
-    \STATE Use boltzmann sampling at low temperature on $Q(s, a)$ to produce average
+    \STATE Use Boltzmann sampling at low temperature on $Q(s, a)$ to produce average
     discounted reward $ADR$ (see Equation~\ref{equ:adr})
 		\STATE \textbf{return} $ADR$
 	\end{algorithmic}  
@@ -386,7 +402,7 @@ The details and the pseudo code (see Algorithm~\ref{alg:CSM}) form of the CSM al
 
 We run algorithms with three well-known benchmarks: Tiger-Grid, Hallway and McCallum 
 as well as a large Prim Maze generated by Prim algorithm randomly
-(see ~Figure \ref{fig:mazes}). The characteristics of POMDP benchmarks are described
+(see ~Figure \ref{fig:mazes}). The characteristics of benchmarks are described
 below (see ~Table \ref{table:benchmarks}), where $|S|$, $|A|$, $|\Omega|$, $r_d$, $r_p$, $r_g$, 
 denotes the number of states, the number of actions, the number of observations, default
 reward, penalty and goal, respectively. The $|A|$ is 4 because the action of the agent
@@ -438,25 +454,25 @@ We evaluate average discounted reward, $ADR$, in the experiment:
 \begin{equation}
   ADR = \frac{\sum_{i=0}^{n_{trails}} \sum_{j=0}^{n_{steps}} \gamma^j r^j}{n_{trails}}, \label{equ:adr}
 \end{equation}
-$ADR$ is widely considered to be a good evaluation of the quality of a value function. The higher
-the $ADR$ is, the more intelligent the agent is considered to be. We track the changing of $ADR$ through time
-to determine whether CSM helps the agent to learn faster and better.
+$n_{trails}$ is the number of trails we test our learning result; $n_{steps}$ is the maximum
+steps to try to reach goal. $ADR$ is widely considered to be a good evaluation of the quality of
+a value function. The higher the $ADR$ is, the more intelligent the agent is considered to be.
+We track the changing of $ADR$ through time to determine whether CSM algorithm helps the agent to learn
+faster and better.
   
-Our experiment uses a discount factor $\gamma=0.9$, an exploration probability $\epsilon=0.1$ for USM.
+Our experiment uses a discount factor $\gamma=0.9$, an exploration probability $\epsilon=0.1$ for USM algorithm.
 The boundary value of the Kolmogorov-Smirnov test is $p=0.1$. We iterate the USM, CSM and random algorithm
 2048 times, and set check points per 48 iteration. In each check point we test our model 256 times
 within 96 steps, i.e., $n_{trial}$ is 256 (see Equation~\ref{equ:adr}) in $ADR$ calculation.
 
 \subsection{Experiment Results}
 
-%The experiment results of CSM, USM and random algorithm are shown in  Table \ref{table:results} and Figure  \ref{fig:tiger_grid_result} to \ref{fig:prim_maze_result}. It should be noted that due to the randomness of the ADR measurement method, the results of ADR may fluctuate. Therefore, the max ADR in Table \ref{table:results}  represents the ADR when the algorithm results start to stabilize, rather than the maximum value of the experimental ADR results.
-%(see Figure~
-%\ref{fig:tiger_grid_result}, \ref{fig:agent_duration_step}).
-The experiment results of CSM, USM and random algorithm are shown below (see Figure~\ref{fig:agent_adr_time}).
+The experiment results of CSM, USM and random algorithms are shown below (see Figure~\ref{fig:agent_adr_time}).
 It should be noted that even if $n_trail$-set to 256-seems large enough, the results of $ADR$ may still fluctuate.
-Therefore, we record ($ADR$, time) tuples in the table below (see Table \ref{table:results}), when $ADR$ starts to become relatively stationary, rather than when $ADR$ gets maximum. 
+Therefore, we record ($ADR$, time) tuples in the table below (see Table \ref{table:results}), when $ADR$ starts
+to become relatively stationary, rather than when $ADR$ gets maximum. 
 
-\begin{figure}[!ht]
+\begin{figure}[!h]
 	\centering
 	\subfloat[Tiger Grid]{\includegraphics[width=2.8in]{06-13-21-48/tiger_grid_result.png}}\\
  \subfloat[Hallway]{\includegraphics[width=2.8in]{06-13-21-48/hallway_result.png}}\\
@@ -468,12 +484,12 @@ Therefore, we record ($ADR$, time) tuples in the table below (see Table \ref{tab
 \end{figure}
 
 \begin{table}[h]
-	\caption{Experiment Results}
+	\caption{The Comparison of time and $ADR$ between USM and CSM}
 	\label{table:results}
 	\centering
 	\begin{tabular}{lcccc}
 		\toprule
-                  &\multicolumn{2}{c}{$ADR$}      &\multicolumn{2}{c}{time taken} \\ 
+                  &\multicolumn{2}{c}{$ADR$}      &\multicolumn{2}{c}{time} \\ 
                   \cmidrule(r){2-3}                 \cmidrule(r){4-5}
     problems      & USM         & CSM               &USM           & CSM      \\
     \midrule
@@ -484,42 +500,6 @@ Therefore, we record ($ADR$, time) tuples in the table below (see Table \ref{tab
     \bottomrule
 	\end{tabular}
 \end{table}
-
-\subsection{Experiment Results Analysis}
-
-% On the Tiger-Grid problem, the CSM algorithm quickly reached a very high ADR in a short
-% time after the start of the experiment, and as the experiment progressed, the ADR of the
-% CSM was basically stable at around 8. In contrast, the experimental results of the USM
-% algorithm have large fluctuations in the early stage of the experiment, and the
-% experimental results in the latter part of the experiment are basically stable at 4, which
-% is only half of the CSM.
-
-% On the Hallway problem, the experimental ADR results of both algorithms showed large fluctuations, 
-% and they had very similar stable maximum ADR. However, from the time point of view, the CSM 
-% algorithm reaches the stable maximum ADR running time is only half of the USM, that is, the CSM 
-% has twice the processing speed of the USM on the Hallway problem.
-
-
-
-% On the McCallum Maze problem, similar to the performance in the Tiger-Grid
-% problem, the CSM algorithm quickly reached a very high ADR in the short time after
-% the start of the experiment, and as the experiment progressed, the ADR of the CSM
-% was basically stable at 6. In contrast, the experimental results of the USM algorithm
-% did not increase significantly in the early stage of the experiment, and only showed
-% a growth trend in the later stage of the experiment. Despite this, USM's final ADR
-% is only about 3, far less than CSM. This shows that in the case of McCallum Maze problem, 
-% CSM can explore the whole problem and find the optimal strategy more quickly and better than USM.
-
-% On large dataset problems, such as the Prim Maze problem in the experiment, CSM can also perform 
-% faster and better than USM. From the experimental results, the CSM achieved a stable maximum ADR 8 
-% in about 20 seconds, while the USM had an ADR of less than 5 in the same time. Even in the mid-term 
-% of the experiment, USM has experienced rapid growth, but its time cost is almost three times that of 
-% CSM, and ADR is still lower than CSM.
-
-% In addition, it can be seen from the experimental results that at the beginning of the experiment, although both algorithms have not gained experience through learning, CSM has obtained a higher ADR than USM. This can be explained in two ways.
-% First, because the CSM algorithm uses the Boltzmann algorithm to explore, the agent does not perform only the optimal action at the stage of exploitation like the USM does, but other non-optimal actions have a certain probability to be executed.
-% Secondly, because CSM uses a strategy of not going back to go forward bolder, when it does not fall into a dead end.
-% It is for these two reasons that CSM is able to explore the full maze and discover the goal faster than the USM, thus obtaining a higher ADR.
 
 In Tiger-Grid, CSM algorithm quickly reached a very high $ADR$ in a short
 time after the start of the experiment. As the experiment progressed, the $ADR$ of
@@ -555,7 +535,7 @@ $ADR$ than USM. This can be explained in two ways:
   not only perform the best action at the stage of exploitation, but  other non-optimal actions,
   which resist overfitting at early stage.
   
-  \item CSM rises the $temperature$ of Boltzmann sampling when agent continously bumps into walls,
+  \item CSM rises the $temperature$ of Boltzmann sampling when agent continuously bumps into walls,
   which helps agent get out of that position. That ensures the efficiency of exploration.
   
 \end{enumerate}
@@ -567,40 +547,17 @@ Overall, It can be seen that CSM algorithm helps agent to learn faster and bette
 
 \section{Conclusion}
 
+The paper presents an reinforcement learning algorithm to apply heuristic information
+into instance-based decision making. We utilized heuristic information in three aspects: constraining the depth
+of the suffix tree using L1 distance, densifying instances in tree node according to environment scale 
+and utilizing Boltzmann sampling to balance exploration and exploitation. The experiment results
+confirmed that CSM algorithm effectively generates good policies, and outperforms USM algorithm in
+every benchmark.
 
-
-%In this paper, the USM algorithm is described in detail, and the defects of USM
-%algorithm are proposed. Based on the original algorithm, some suggestions for improvement
-%are proposed. Then the CSM (Compressed Suffix Memory) algorithm is proposed. At the end of
-%this paper, the content of the maze experiment is introduced to test the CSM algorithm, and
-%compared with the results of the USM algorithm, it shows that the CSM algorithm does have
-%some improvement effects.
-
-%In this paper, we briefly described the POMDP model and the USM algorithm, and pointed out the 
-%shortcomings of USM. For the original USM algorithm, we proposed optimization suggestions in 
-%three aspects, constraint of the depth of the suffix tree, densification of instances in tree node, and 
-%utilization of boltzmann sampling, respectively, and introduced a new CSM algorithm. 
-%Finally, the experiments of four benchmark problems we implemented also confirmed that the improvements 
-%of the CSM algorithm are indeed effective to boost efficiency. 
-
-%Although the result of experiment improves greatly, there are still some problems to be consider. 
-%For example, the boltzmann sampling will increase the computational cost of the algorithm, thereby increasing the time of each iteration.
-%And how to maximize the use of experience, that agents have learned, to the future exploration is also a problem.
-
-
-In this paper, POMDP model and instance-based approach USM algorithm are described firstly. 
-Then this paper introduced a new CSM algorithm based on the original USM algorithm, improving it in three aspects,  constraint of the depth of the suffix tree, densification of instances in tree node, and 
-utilization of boltzmann sampling. 
-The experiment results confirmed that both effect and efficiency are promoted comparing CSM to USM. 
-
-%Although the result of experiment improves greatly, there are still some problems to be consider. 
-%For example, the boltzmann sampling will increase the computational cost of the algorithm, thereby increasing the time of each iteration.
-%And how to maximize the use of experience, that agents have learned, to the future exploration is also a problem. For example, the boltzmann sampling costs extra computational resources of the algorithm, thereby increasing the time of each iteration.
-
-
-Although experiment results demonstrate great improvement, 
-there are still some problems to be consider. For example, the boltzmann sampling costs extra computational resources of the algorithm, thereby increasing the time of each iteration.
-Furthermore,how agent mines more effective heuristic standards based on the acquired exploration experience is our future research direction. 
+In the future work, the computational resources cost by repeatedly suffix matching
+is needed to be reduced; time cost of Boltzmann sampling is needed to be reduced.
+Furthermore, more effective heuristic standards based on exploration experience have
+to be considered. 
 
 
 
