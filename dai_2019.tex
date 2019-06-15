@@ -65,7 +65,7 @@
   of actions of each state, but involving exponentially expanded state space and
   a number of redundant states. In this paper we propose a new state space compressed
   algorithm, called Compressed Suffix Memory (CSM) algorithm. CSM algorithm obtains
-  heuristic information of environments by blind exploration, e.g. the path length
+  heuristic information of environments by blind exploration, for example, the path length
   of most solutions and goal frequencies, to improve efficiency and resist overfitting.
   We use Boltzmann sampling to balance between exploration and exploitation. Our experiments
   show that both the efficiency and the effect have been improved a lot by CSM algorithm
@@ -85,7 +85,7 @@ historical information, POMDPs provide a rich mathematical approach to solving
 sequential problems by calculating the Q-value of actions.
 
 As the agent does not directly observe the underlying state, the generation of
-the state space is the key to POMDP-based reinforcement learning algorithms.
+the state space is the key to reinforcement learning algorithms.
 Many instance based methods have been put forward, including Nearest Sequence
 Memory (NSM) algorithm \cite{mccallum1997reinforcement} and Utile Suffix Memory
 (USM) algorithms \cite{mccallum1995instance}. USM algorithm presents the state space by
@@ -93,27 +93,26 @@ tree-nodes in a suffix tree building from the instance chains, and is proved
 effective maximizing the Q-value of actions. However, the state space of USM
 algorithm exponentially expands during iteration and comprises many redundant
 states, which reduces the efficiency. Furthermore, because the $\epsilon$-greedy
-policy of USM treats the second best and the worst the same, it may lead to
+policy of USM lack of exploitation of overall information, it may lead to
 overfitting.
 
 In this paper, we propose a new algorithm, called Compressed Suffix Memory (CSM)
 algorithm, which optimizes the generation of a utile tree and decision process.
-First, the heuristic information is obtained by the agent during a blind exploration
-of the environment, e.g., $l$ as the length of the longest non-repetitive observation
-sequence and $p$ the probability of goal during this exploration. Second, the maximum
+First, the heuristic information is obtained by the blind exploration
+of the environment, e.g., $l$ as the effective path length from start to goal
+and $p$ as the probability of goal during the exploration. Second, the maximum
 depth of the suffix tree is limited to doubled $l$ and the minimum instances required
 to trigger state splitting is deduced from $p$. Finally, after initializing the agent
 with a random policy, boltzmann sampling approach will be applied. Experiment has shown
 that both the efficiency and the effect have been greatly improved by CSM compared
 with USM.
 
-The paper outline follows. We will briefly review the basics of reinforcement
-learning, POMDP problems and Utile Suffix Memory (USM) algorithm, in Section 2.
-Next we propose Compressed Suffix Memory (CSM) algorithm, which solves the weaknesses
-of USM by new means of utile tree generation, new exploration method and self correction
-mechanism, in Section 3. We measure the performance of CSM and see improvements comparing
-with USM, in Section 4. We close in Section 5, with a brief summary and possible means of
-improvement of CSM.
+The paper outline follows. We will briefly review reinforcement in partially observable
+environment and Utile Suffix Memory (USM) algorithm, in Section 2.
+Next we propose Compressed Suffix Memory (CSM) algorithm, which takes advantage of
+heuristic information and optimizes the generation of the suffix tree, in Section 3.
+We measure the performance of CSM and see improvements comparing with USM, in Section 4.
+We close in Section 5, with a brief summary and possible means of improvement of CSM.
 
 \section{Background}
 
@@ -132,24 +131,25 @@ $R_{t_n}=\sum_{t=0}^{t_n} \gamma^t r_t$. When a problem satisfies the Markov
 property, the problem can be formulated as a Markov decision process (MDP), which
 is defined by the 5-tuple ($S, A, T, R, \gamma$).
 
-However, in most cases, an agent cannot directly observe the states of the MDP
-model underlying the provided environment, but can only deduce a state by an
+However, in most cases, an agent cannot directly observe the states of the
+underlying MDP model in the provided environment, but can only deduce a state by an
 observation. It is necessary to bring in partially observable Markov decision
 process (POMDP). It defines $\Omega$ as a set of observations and $O$ as a set of
 conditional observation probabilities-mapping current state $s_t$ and
 previous action $a_{t-1}$ to the probability of current observation $o_t$. 
 In that way, a POMDP can be defined by the 7-tuple ($S, A, T, R, \Omega, O, \gamma$).
 
-When the model is given, i.e., all elements of the 7-tuple are known, there are
-plenty of algorithms to calculate a best policy \cite{shani2013survey}. However,
-in model-free methods, an agent can learn with trail-and-error from experience
-directly and a policy can generated before grasping all information of a model
-\cite{li2017deep}. An important way to implement model-free methods is to make
-an agent comprise some sort of internal memory \cite{aberdeen2003policy,
-meuleau1999learning,mccallum1995instance} (see Figure~\ref{fig:agent memory}).
+When the model is successfully learned, i.e., all elements of the 7-tuple are
+generated to fit the problem, there are plenty of algorithms to calculate a best
+policy \cite{shani2013survey}. However, in model-free methods, an agent can learn
+with trail-and-error from experience directly and a policy can generated before
+grasping all information of a model \cite{li2017deep}, which is normally faster
+and more suitable real time problem.  An important way to implement model-free
+methods is to make an agent comprise some sort of internal memory \cite{aberdeen2003policy,
+meuleau1999learning, mccallum1995instance} (see Figure~\ref{fig:agent memory}).
 For example, the states of a model can be expressed by some nearest observations
-and internal states of an agent. After learning the state space, the agent can solve it by 
-model-free methods, such as HQ-learning \cite{wiering1997hq}.
+and internal states of an agent. After learning the state space, the agent can make
+decisions using model-free methods, such as HQ-learning \cite{wiering1997hq}.
 
 \begin{figure}[b]
   \centering
@@ -171,21 +171,20 @@ Like other instance based algorithms, USM records each of its raw instances
 \cite{mccallum1995instance}. At each time step $t$, the agent executes action
 $a_t \in A$ to get a new instance, gets observation $o_{t+1} \in O$, and get a
 instant reward $r_{t+1}$ according to $R$, which is determined by the environment.
-That new instance is formulated as
+A new instance is formulated as
 \begin{equation}
   T_{t+1}= (T_t, a_t, o_{t+1}, r_{t+1}). \label{equ:instance}
 \end{equation}
-$T_{t+1}$ is $T_t$'s successor and, similarly, $T_{t-1}$ is $T_t$'s predecessor.
-Normally, in an environment with goals for agent to reach, chains of instances-from
-initial instance to instance reached goal-are built during the learning phase.
+$T_{t+1}$ is $T_t$'s successor. It is obvious that instance chains are built
+from during learning process.
 
-In order to find hidden states from those instances chains, USM creates a suffix tree,
+In order to deduce state space from those instance chains, USM creates a suffix tree,
 whose leaves present the state space and store clustered instances. Each node of the tree
 can thus be uniquely identified by the string of labels on the path from node to the root,
 and the string is called the node’s suffix. An instance is always deposited into the
 nodes whose suffix matches its observation and action context, or suffix. That is,
 for an instance $T_i$, if its suffix $[..., o_{t-3}, a_{t-3}, o_{t-2}, a_{t-2}, o_{t-1}, a_{t-1}]$
-matches the suffix of some node, it would be put into that node (see Figure~\ref{fig:suffix tree}).
+matches the suffix of a certain node, it would be put into that node (see Figure~\ref{fig:suffix tree}).
 The set of instances that a node contains is written as $I(s)$. The suffix tree leaf which
 instance $T$ belongs to is written as $L(T)$. It is inevitable that the action layer and
 the observation layer appears alternately when tree grows (see Figure~\ref{fig:suffix tree}).
@@ -240,22 +239,23 @@ when at those states again.
 
 \section{Compressed Suffix Memory Algorithm}
 
-In order to overcome the weaknesses of USM. We re-constructed the work flow of agent in maze
-environments. Firstly, we introduces the blind exploration. Exploration and exploitation
-is a key issue in reinforcement learning. Agent could first make a blind policy exploration
-of the environment, obtaining some heuristic experience, and apply it to following reinforcement
-learning. We found that the longest non-repetitive observations of the maze and the frequency
-of goals can decently presents the local complexity and the scale of the environment, respectively.
-The heuristic experience can be used to improve the algorithm:
+Exploration and exploitation is a key issue in reinforcement learning. Heuristic information
+of environment can help agent understand state space better. Agent could first make a blind
+policy exploration of the environment, obtaining some interaction experience, and apply
+it to following reinforcement learning. The effective path length to goal and the frequency
+of goals decently represents the scale of the environment and can be used to improve the algorithm.
+In addition, the 
 
 \begin{enumerate}
-  \item The depth of the suffix tree could be constrained. We tried to locate the redundant
-  states of USM and found a potential cause. The suffix tree may grow so deep that a leaf's
-  suffix is longer than most paths from start to goal. By deducing the length of most paths
-  from start to goal as $l$ and limiting the suffix tree's depth to $2l$ can reduce the
-  generation of less useful leaves. So we set $l$ as the sum of longest horizontal edge and
-  vertical edge found by the blind search, since in most situations, paths generated by
-  the best policy are shorter than $l$.
+  \item The depth of the suffix tree should be constrained. The 3rd Quartile of path lengths
+  to goal and the maximum tree depth are denoted as $l_3$ and $d$. Leaves with suffix longer
+  than $2l_3$ are considered redundant. During the learning process, $l_3$ decreases and $d$ increases,
+  and both become stable. However, the exploitation of immature policy can cause overfitting,
+  which makes $d$ grows greater than $2l_3$. So, an alterable guardian depth $l$ is needed.
+  On the one hand, $l$ starts with a relatively small value and will gradually increase through
+  learning if it is less than $l_3$. On the other hand, $d$ will not grow greater than $2l$.
+  In each instance chain, the maximum L1 distance between each instance and the initial instance
+  can be calculated.
 
   \item Instances in tree node could be denser. Instead of doing K-S test every $n$ instances
   added, which may lead to overfitting at some leaves, agent only triggers K-S test when leaves
