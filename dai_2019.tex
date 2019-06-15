@@ -408,10 +408,10 @@ details.
     \toprule
     problem         & $|S|$          & $|A|$          & $|\Omega|$  &$r_d$  &$r_p$  &$r_g$\\
     \midrule
-    Tiger-Grid      & 9              & 4              & 7           & -0.1  & -4    & 32  \\
-    Hallway         & 15             & 4              & 4           & -0.1  & -4    & 32  \\
-    McCallum        & 23             & 4              & 9           & -0.1  & -4    & 32  \\
-    Prim Maze       & 154            & 4              & 16          & -0.1  & -4    & 96  \\
+    Tiger-Grid      & 9              & 4              & 7           & -0.1  & -4    & 16  \\
+    Hallway         & 15             & 4              & 4           & -0.1  &     & 32  \\
+    McCallum        & 23             & 4              & 9           & -0.1  &     & 18  \\
+    Prim Maze       & 154            & 4              & 16          & -0.1  &    & 96  \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -567,6 +567,8 @@ Overall, It can be seen that CSM algorithm helps agent to learn faster and bette
 
 \section{Conclusion}
 
+
+
 %In this paper, the USM algorithm is described in detail, and the defects of USM
 %algorithm are proposed. Based on the original algorithm, some suggestions for improvement
 %are proposed. Then the CSM (Compressed Suffix Memory) algorithm is proposed. At the end of
@@ -574,17 +576,32 @@ Overall, It can be seen that CSM algorithm helps agent to learn faster and bette
 %compared with the results of the USM algorithm, it shows that the CSM algorithm does have
 %some improvement effects.
 
+%In this paper, we briefly described the POMDP model and the USM algorithm, and pointed out the 
+%shortcomings of USM. For the original USM algorithm, we proposed optimization suggestions in 
+%three aspects, constraint of the depth of the suffix tree, densification of instances in tree node, and 
+%utilization of boltzmann sampling, respectively, and introduced a new CSM algorithm. 
+%Finally, the experiments of four benchmark problems we implemented also confirmed that the improvements 
+%of the CSM algorithm are indeed effective to boost efficiency. 
 
-In this paper, we briefly described the POMDP model and the USM algorithm, and pointed out the 
-shortcomings of USM. For the original USM algorithm, we proposed optimization suggestions in 
-three aspects, constraint of the depth of the suffix tree, densification of instances in tree node, and 
-utilization of boltzmann sampling, respectively, and introduced a new CSM algorithm. 
-Finally, the experiments of four benchmark problems we implemented also confirmed that the improvements 
-of the CSM algorithm are indeed effective to boost efficiency. 
+%Although the result of experiment improves greatly, there are still some problems to be consider. 
+%For example, the boltzmann sampling will increase the computational cost of the algorithm, thereby increasing the time of each iteration.
+%And how to maximize the use of experience, that agents have learned, to the future exploration is also a problem.
 
-Although the result of experiment improves greatly, there are still some problems to be consider. 
-For example, the boltzmann sampling will increase the computational cost of the algorithm, thereby increasing the time of each iteration.
-And how to maximize the use of experience, that agents have learned, to the future exploration is also a problem.
+
+In this paper, POMDP model and instance-based approach USM algorithm are described firstly. 
+Then this paper introduced a new CSM algorithm based on the original USM algorithm, improving it in three aspects,  constraint of the depth of the suffix tree, densification of instances in tree node, and 
+utilization of boltzmann sampling. 
+The experiment results confirmed that both effect and efficiency are promoted comparing CSM to USM. 
+
+%Although the result of experiment improves greatly, there are still some problems to be consider. 
+%For example, the boltzmann sampling will increase the computational cost of the algorithm, thereby increasing the time of each iteration.
+%And how to maximize the use of experience, that agents have learned, to the future exploration is also a problem. For example, the boltzmann sampling costs extra computational resources of the algorithm, thereby increasing the time of each iteration.
+
+
+Although experiment results demonstrate great improvement, 
+there are still some problems to be consider. For example, the boltzmann sampling costs extra computational resources of the algorithm, thereby increasing the time of each iteration.
+Furthermore,how agent mines more effective heuristic standards based on the acquired exploration experience is our future research direction. 
+
 
 
 
