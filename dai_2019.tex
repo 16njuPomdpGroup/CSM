@@ -454,7 +454,7 @@ within 96 steps, i.e., $n_{trial}$ is 256 (see Equation~\ref{equ:adr}) in $ADR$ 
 %\ref{fig:tiger_grid_result}, \ref{fig:agent_duration_step}).
 The experiment results of CSM, USM and random algorithm are shown below (see Figure~\ref{fig:agent_adr_time}).
 It should be noted that even if $n_trail$-set to 256-seems large enough, the results of $ADR$ may still fluctuate.
-Therefore, we record (plateau $ADR$, time) tuples in the table below (see Table \ref{table:results}), when $ADR$ starts to become relatively stationary, rather than when $ADR$ gets maximum. 
+Therefore, we record ($ADR$, time) tuples in the table below (see Table \ref{table:results}), when $ADR$ starts to become relatively stationary, rather than when $ADR$ gets maximum. 
 
 \begin{figure}[!ht]
 	\centering
@@ -473,7 +473,7 @@ Therefore, we record (plateau $ADR$, time) tuples in the table below (see Table 
 	\centering
 	\begin{tabular}{lcccc}
 		\toprule
-                  &\multicolumn{2}{c}{plateau $ADR$}      &\multicolumn{2}{c}{time taken} \\ 
+                  &\multicolumn{2}{c}{$ADR$}      &\multicolumn{2}{c}{time taken} \\ 
                   \cmidrule(r){2-3}                 \cmidrule(r){4-5}
     problems      & USM         & CSM               &USM           & CSM      \\
     \midrule
@@ -542,7 +542,7 @@ indicated that in McCallum, CSM algorithm could find a better policy more quickl
 algorithm.
 
 In larger scale problems, such as the Prim Maze, CSM algorithm also performed
-faster and better than USM. From the experiment results, CSM algorithm achieved a plateau
+faster and better than USM. From the experiment results, CSM algorithm achieved an
 $ADR$ about 8 in about 20 seconds. USM algorithm, meanwhile, only reached around 5.
 Even if in the mid-stage of the experiment, where the $ADR$ of USM has experienced arapid growth,
 its time cost was almost three times that of CSM, and had a still lower $ADR$.
